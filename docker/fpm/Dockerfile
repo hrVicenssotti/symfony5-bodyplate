@@ -41,4 +41,4 @@ RUN chown -R www-data:www-data /var/www/.composer
 
 WORKDIR /var/www/project/
 
-CMD ["sh", "-c", "composer install && bin/console doctrine:migrations:migrate && php-fpm"]
+CMD ["docker/fpm/docker-entrypoint.sh"]

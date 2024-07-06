@@ -20,8 +20,7 @@ services:
     build:
       context: ./docker/fpm
       dockerfile: Dockerfile
-    entrypoint: ["sh", "-c", "composer install && bin/console doctrine:migrations:migrate"]
-    command: ["php-fpm"]
+    command: [sh", "-c", "docker/fpm/docker-entrypoint.sh"]
     volumes:
       - ./:/var/www/project/:cached
     depends_on:
