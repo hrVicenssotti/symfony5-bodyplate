@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Domain/Entity/'
+            - '../src/Kernel.php'
+
+    UserRepository:
+        class: App\Infra\Repository\UserRepository
+        arguments:
+            - $entityManager: 'EntityManager'
+
+    UserService:
+        class: App\Domain\Service\UserService
+
+    UserController:
+        class: App\Infra\Http\Controller\UserController
+        arguments:
+            - $userService: '@UserService'

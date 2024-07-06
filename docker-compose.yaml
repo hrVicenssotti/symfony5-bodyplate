@@ -1,0 +1,51 @@
+version: "3.7"
+
+services:
+  database:
+    container_name: service-db
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+    ports:
+      - 5432:5432
+    networks:
+      - symfony
+
+  php-fpm:
+    container_name: service-php
+    build:
+      context: ./docker/fpm
+      dockerfile: Dockerfile
+    entrypoint: ["sh", "-c", "composer install && bin/console doctrine:migrations:migrate"]
+    command: ["php-fpm"]
+    volumes:
+      - ./:/var/www/project/:cached
+    depends_on:
+      - database
+    networks:
+      - symfony
+
+  web:
+    container_name: service-web
+    build:
+      context: ./docker/web
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/project/:cached
+    ports:
+      - 8000:80
+    depends_on:
+      - php-fpm
+    networks:
+      - symfony
+
+networks:
+  symfony:
+    driver: bridge
+
+volumes:
+  database_data:
